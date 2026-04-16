@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İyi Doğdun Anneciğim</title>
+    <style>
+        /* Sayfa Genel Ayarları */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #fdf2f8; /* Uçuk pembe/krem arka plan */
+            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', sans-serif;
+            overflow: hidden; /* Ekran dışına taşmaları gizle */
+        }
+
+        /* Buton Tasarımı */
+        #clickMeBtn {
+            padding: 15px 40px;
+            font-size: 24px;
+            background-color: #ff80df;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            position: absolute;
+        }
+
+        #clickMeBtn:hover {
+            transform: scale(1.1);
+            background-color: #ff4dd2;
+        }
+
+        /* Pasta ve Mesaj Alanı */
+        #cakeContainer {
+            display: none; /* Başlangıçta gizli */
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Katmanların Ortak Özelliği (Başlangıçta Görünmez) */
+        .layer {
+            opacity: 0;
+            animation-fill-mode: forwards;
+        }
+
+        /* Mum Tasarımı */
+        .candle {
+            width: 15px;
+            height: 40px;
+            background: repeating-linear-gradient(
+                45deg,
+                #ffffff,
+                #ffffff 5px,
+                #ff4d4d 5px,
+                #ff4d4d 10px
+            );
+            border-radius: 4px;
+            position: relative;
+            z-index: 4;
+            margin-bottom: -5px; /* Katmana tam oturması için */
+        }
+
+        /* Mum Alevi */
+        .candle::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: -2px;
+            width: 20px;
+            height: 20px;
+            background: #ffb84d;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            box-shadow: 0 0 15px #ffb84d;
+        }
+
+        /* Pasta Katmanları Tasarımı */
+        .top-layer {
+            width: 130px;
+            height: 50px;
+            background-color: #ffb3c6; /* Çilekli katman */
+            border-radius: 15px 15px 5px 5px;
+            z-index: 3;
+            box-shadow: inset 0 -5px 0 rgba(0,0,0,0.1);
+        }
+
+        .mid-layer {
+            width: 180px;
+            height: 60px;
+            background-color: #ffdfba; /* Vanilyalı katman */
+            border-radius: 15px 15px 5px 5px;
+            z-index: 2;
+            box-shadow: inset 0 -5px 0 rgba(0,0,0,0.1);
+            margin-top: -5px;
+        }
+
+        .bot-layer {
+            width: 230px;
+            height: 70px;
+            background-color: #baffc9; /* Fıstıklı/Naneli katman */
+            border-radius: 15px 15px 5px 5px;
+            z-index: 1;
+            box-shadow: inset 0 -5px 0 rgba(0,0,0,0.1);
+            margin-top: -5px;
+        }
+
+        /* Mesaj Tasarımı */
+        .message {
+            opacity: 0;
+            font-size: 35px;
+            color: #d63384;
+            font-weight: bold;
+            margin-top: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Yukarıdan Düşme Animasyonu */
+        @keyframes dropDown {
+            0% { transform: translateY(-800px); opacity: 0; }
+            60% { transform: translateY(20px); opacity: 1; }
+            80% { transform: translateY(-10px); opacity: 1; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Mesajın Belirme Animasyonu */
+        @keyframes fadeInText {
+            0% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Javascript ile Eklenecek Animasyon Sınıfları */
+        .animate-drop {
+            animation: dropDown 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        .animate-text {
+            animation: fadeInText 1s ease-in-out forwards;
+        }
+
+        /* Düşüş Sırası İçin Gecikmeler (Zamanlamalar) */
+        .delay-1 { animation-delay: 0.2s; } /* En alt katman ilk düşer */
+        .delay-2 { animation-delay: 0.8s; } /* Orta katman */
+        .delay-3 { animation-delay: 1.4s; } /* Üst katman */
+        .delay-4 { animation-delay: 2.0s; } /* Mum */
+        .delay-text { animation-delay: 2.8s; } /* En son mesaj çıkar */
+
+    </style>
+</head>
+<body>
+
+    <button id="clickMeBtn">bana tıkla :3</button>
+
+    <div id="cakeContainer">
+        <div class="layer candle delay-4"></div>
+        <div class="layer top-layer delay-3"></div>
+        <div class="layer mid-layer delay-2"></div>
+        <div class="layer bot-layer delay-1"></div>
+        <div class="message delay-text">iyi doğdun anneciğim</div>
+    </div>
+
+    <script>
+        const btn = document.getElementById('clickMeBtn');
+        const cakeContainer = document.getElementById('cakeContainer');
+        const layers = document.querySelectorAll('.layer');
+        const message = document.querySelector('.message');
+
+        btn.addEventListener('click', () => {
+            // Butonu tamamen gizle
+            btn.style.display = 'none';
+            // Pastanın bulunduğu alanı flex olarak görünür yap
+            cakeContainer.style.display = 'flex';
+            
+            // Tüm pasta katmanlarına düşme animasyonunu ekle
+            layers.forEach(layer => {
+                layer.classList.add('animate-drop');
+            });
+            
+            // Mesaja belirme animasyonunu ekle
+            message.classList.add('animate-text');
+        });
+    </script>
+
+</body>
+</html>
